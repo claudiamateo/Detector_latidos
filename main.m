@@ -59,7 +59,7 @@ title('TF de la señal sin continua');
 
 %% 3. Filtrado de artefactos en la señal ECG
 
-%3.1. Filtro paso bajo para eliminar altas frecuencias
+%% 3.1. Filtro paso bajo para eliminar altas frecuencias
 %Probamos con el filtro paso bajo implementado en la presentación Prezi
 a = [1 -2 1];
 b = [1 0 0 0 0 0 -2 0 0 0 0 0 1];
@@ -85,35 +85,61 @@ subplot(211),plot(tm,SSC),title('Señal original sin filtrar'),
 subplot(212),plot(tm,SSC_filtrada_cheby2),
 title('Señal filtrada paso bajo con Chebyshev 2');
 
-%Probamos con un filtro cheby2 de orden X
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%Probamos con un filtro cheby2 de orden 2
+[bc2_2,ac2_2] = cheby2(2,80,Wcb); % 80 son los decibelios en la banda de rechazo
 
+figure('Name','Respuesta del sistema en frecuencia filtro Chebyshev 2'),
+freqz(bc2_2,ac2_2),title('Respuesta en frecuencia del filtro Chebyshev 2');
+
+SSC_filtrada_2_cheby2=filter(bc2_2,ac2_2,SSC);
+figure('Name','Señal vs Señal filtrada paso bajo con Chebyshev 2'),
+subplot(211),plot(tm,SSC),title('Señal original sin filtrar'),
+subplot(212),plot(tm,SSC_filtrada_2_cheby2),
+title('Señal filtrada paso bajo con filtro Chebyshev 2 de orden 2');
 %Mostramos la diferencia entre los filtros Chebyshev 2 del mismo orden 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
+figure('Name','Señal vs Señal filtrada paso bajo con filtro elíptico'),
+subplot(311),plot(tm,SSC),title('Señal original')
+subplot(312),plot(tm,SSC_filtrada_cheby2),title('Señal filtrada paso bajo con filtro elíptico orden 6'),
+subplot(313),plot(tm,SSC_filtrada_2_cheby2),
+title('Señal filtrada paso bajo con filtro Chebyshev 2 orden 2');
 
 %Probamos con el filtro elíptico de orden 6
 [be,ae] = ellip(6,5,80,Wcb);
 
-figure('Name','Respuesta del sistema en frecuencia filtro elíptico'),
-freqz(be,ae),title('Respuesta en frecuencia del filtro Elíptico');
+figure('Name','Respuesta del sistema en frecuencia filtro elíptico orden 6'),
+freqz(be,ae),title('Respuesta en frecuencia del filtro Elíptico orden 6');
 
 FPB_E = filter(be,ae,SSC); 
-figure('Name','Señal vs Señal filtrada paso bajo con filtro elíptico'),
+figure('Name','Señal vs Señal filtrada paso bajo con filtro elíptico orden 6'),
 subplot(211),plot(tm,SSC),title('Señal original sin filtrar'),
 subplot(212),plot(tm,FPB_E),
-title('Señal filtrada paso bajo con filtro elíptico');
+title('Señal filtrada paso bajo con filtro elíptico orden 6');
 
-%Probamos con un filtro elíptico de orden X
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%Probamos con un filtro elíptico de orden 2
+[be2,ae2] = ellip(2,5,80,Wcb);
+
+figure('Name','Respuesta del sistema en frecuencia filtro elíptico orden 2'),
+freqz(be2,ae2),title('Respuesta en frecuencia del filtro Elíptico orden 2');
+
+FPB2_E = filter(be2,ae2,SSC); 
+figure('Name','Señal vs Señal filtrada paso bajo con filtro elíptico'),
+subplot(211),plot(tm,SSC),title('Señal original sin filtrar'),
+subplot(212),plot(tm,FPB2_E),
+title('Señal filtrada paso bajo con filtro elíptico orden 2');
 
 %Mostramos la diferencia entre los filtros elípticos 2 del mismo orden 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+figure('Name','Señal vs Señal filtrada paso bajo con filtro elíptico'),
+subplot(311),plot(tm,SSC),title('Señal original')
+subplot(312),plot(tm,FPB_E),title('Señal filtrada paso bajo con filtro elíptico orden 6'),
+subplot(313),plot(tm,FPB2_E),
+title('Señal filtrada paso bajo con filtro elíptico orden 2');
 
 
 
-%3.2. Filtro paso alto para eliminar la componente de continua y para eliminar las
+%% 3.2. Filtro paso alto para eliminar la componente de continua y para eliminar las
 % bajas frecuencias 
+
+
 
 %Probamos con el filtro paso alto implementado en la presentación Prezi
 a1 = [1 - 1];
@@ -130,31 +156,69 @@ title('Señal ECG con filtro paso alto presentación de frec de corte de 5Hz');
 Fca = 5; % Frecuencia de corte (en Hz)
 Wca = Fca/(Fs/2); % Frecuencia de corte normalizada (en radianes)
 
-%Probamos con filtro Chebyshev 2 de orden 6.
 
-%Probamos con un filtro cheby2 de orden X
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%Probamos con filtro Chebyshev 2 de orden 6.
+[bc2_PA,ac2_PA] = cheby2(6,80,Wca,'high'); % 80 son los decibelos en la banda de rechazo
+figure; 
+freqz(bc2_PA,ac2_PA), title('Respuesta en frecuencia del filtro PA Chebysehv 2 orden 6');
+title('Filtro Chebyshev 2');
+FPA_C2 = filter(bc2_PA,ac2_PA,SSC); 
+
+figure('Name','Señal vs Señal filtrada paso alto con filtro Chebyshev 2'),
+subplot(211),plot(tm,SSC),title('Señal original sin filtrar'),
+subplot(212),plot(tm,FPA_C2),
+title('Señal filtrada paso alto con filtro Chebyshev 2 de orden 6');
+
+%Probamos con un filtro cheby2 de orden 2
+[bc2_PA_2,ac2_PA_2] = cheby2(2,80,Wca,'high'); % 80 son los decibelos en la banda de rechazo
+figure; 
+freqz(bc2_PA_2,ac2_PA_2), title('Respuesta en frecuencia del filtro PA Chebysehv 2 orden 2');
+title('Filtro Chebyshev 2');
+FPA_C2_2 = filter(bc2_PA_2,ac2_PA_2,SSC); 
+
+figure('Name','Señal vs Señal filtrada paso alto con filtro Chebyshev 2'),
+subplot(211),plot(tm,SSC),title('Señal original sin filtrar'),
+subplot(212),plot(tm,FPA_C2_2),
+title('Señal filtrada paso alto con filtro Chebyshev 2 de orden 2');
 
 %Mostramos la diferencia entre los filtros Chebyshev 2 del mismo orden 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+figure('Name','Señal vs Señal filtrada paso alto con filtro Chebyshev 2'),
+subplot(311),plot(tm,SSC),title('Señal original')
+subplot(312),plot(tm,FPA_C2),title('Señal filtrada paso alto con filtro Chebyshev 2 orden 6'),
+subplot(313),plot(tm,FPA_C2_2),
+title('Señal filtrada paso alto con filtro Chebyshev 2 orden 2');
+
+
 
 %Probamos con Filtro elíptico de orden 6.
-[be2,ae2] = ellip(6,5,80,Wca,'high');
+[be_PA,ae_PA] = ellip(6,5,80,Wca,'high');
 figure();
-freqz(be2,ae2), title('Respuesta en frecuencia del filtro Elíptico');
-FPA_E = filter(be2,ae2,SSC); 
+freqz(be_PA,ae_PA), title('Respuesta en frecuencia del filtro Elíptico');
+FPA_E = filter(be_PA,ae_PA,SSC); 
 
 figure('Name','Señal vs Señal filtrada paso alto con filtro elíptico'),
 subplot(211),plot(tm,SSC),title('Señal original sin filtrar'),
 subplot(212),plot(tm,FPA_E),
-title('Señal filtrada paso alto con filtro elíptico');
+title('Señal filtrada paso alto con filtro elíptico de orden 6');
 
-%Probamos con un filtro elíptico de orden X
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%Probamos con un filtro elíptico de orden 2
+[be_PA2,ae_PA2] = ellip(2,5,80,Wca,'high');
+figure();
+freqz(be_PA2,ae_PA2), title('Respuesta en frecuencia del filtro Elíptico');
+FPA_E2 = filter(be_PA2,ae_PA2,SSC); 
+
+figure('Name','Señal vs Señal filtrada paso alto con filtro elíptico'),
+subplot(211),plot(tm,SSC),title('Señal original sin filtrar'),
+subplot(212),plot(tm,FPA_E2),
+title('Señal filtrada paso alto con filtro elíptico de orden 2');
 
 %Mostramos la diferencia entre los filtros elípticos 2 del mismo orden 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
+figure('Name','Señal vs Señal filtrada paso bajo con filtro elíptico'),
+subplot(311),plot(tm,SSC),title('Señal original')
+subplot(312),plot(tm,FPA_E),title('Señal filtrada paso alto con filtro elíptico orden 6'),
+subplot(313),plot(tm,FPA_E2),
+title('Señal filtrada paso alto con filtro elíptico orden 2');
 
 %% Actividad 4: Derivación
 
