@@ -280,17 +280,17 @@ subplot(414),plot(tm,FPA_E3),title('Señal filtrada paso alto con filtro elípti
 
 
 %Señal final con los filtros seleccionados
-
-soriginal_filtrada_PB=FPB3_E;
+%Elegimos el FP elíptico de orden 6
+soriginal_filtrada_PB=FPB_E;
 figure, plot(tm,soriginal_filtrada_PB);
 %Filtramos esa señal con el filtro elíptico PA de orden 6
 sfinal=filter(be_PA,ae_PA,soriginal_filtrada_PB); 
 figure, plot(tm,sfinal);
 
 %Para la presentación de Prezi añadimos esto
-sfinal = sfinal/32;
-sfinal = soriginal_filtrada_PB-sfinal;
-figure, plot(tm,sfinal);
+%sfinal = sfinal/32;
+%sfinal = soriginal_filtrada_PB-sfinal;
+%figure, plot(tm,sfinal);
 
 %% Actividad 4: Derivación
 
