@@ -173,9 +173,9 @@ subplot(414),plot(tm,FPB3_E),title('Señal filtrada paso bajo con filtro elípti
 
 
 %Probamos con el filtro paso alto implementado en la presentación Prezi
-a1 = [1 - 1];
+a1 = [1 -1];
 b1 = [1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 -1];
-SSC_filtrada_paso_alto = filter(a1,b1,SSC);
+SSC_filtrada_paso_alto = filter(b1,a1,SSC);
 SSC_filtrada_paso_alto = SSC_filtrada_paso_alto/32;
 SSC_filtrada_paso_alto = SSC-SSC_filtrada_paso_alto;
 
@@ -277,7 +277,23 @@ subplot(412),plot(tm,FPA_E),title('Señal filtrada paso alto con filtro elíptic
 subplot(413),plot(tm,FPA_E2),title('Señal filtrada paso alto con filtro elíptico orden 2'),
 subplot(414),plot(tm,FPA_E3),title('Señal filtrada paso alto con filtro elíptico orden 12');
 
+
+
+%Señal final con los filtros seleccionados
+
+soriginal_filtrada_PB=FPB3_E;
+figure, plot(tm,soriginal_filtrada_PB);
+%Filtramos esa señal con el filtro elíptico PA de orden 6
+sfinal=filter(be_PA,ae_PA,soriginal_filtrada_PB); 
+figure, plot(tm,sfinal);
+
+%Para la presentación de Prezi añadimos esto
+sfinal = sfinal/32;
+sfinal = soriginal_filtrada_PB-sfinal;
+figure, plot(tm,sfinal);
+
 %% Actividad 4: Derivación
+
 
 %% Actividad 5: Detectar los QRS y marcarlos
 
