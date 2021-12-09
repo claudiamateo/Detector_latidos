@@ -262,7 +262,7 @@ subplot(212),plot(tm,FPA_E3),
 title('Señal filtrada paso alto con filtro elíptico de orden 12');
 
 %Mostramos la diferencia entre los filtros elípticos 2 de diferente orden 
-figure('Name','Señal vs Señal filtrada paso bajo con filtro elíptico'),
+figure('Name','Señal vs Señal filtrada paso alto con filtro elíptico'),
 subplot(411),plot(tm,SSC),title('Señal original')
 subplot(412),plot(tm,FPA_E),title('Señal filtrada paso alto con filtro elíptico orden 6'),
 subplot(413),plot(tm,FPA_E2),title('Señal filtrada paso alto con filtro elíptico orden 2'),
@@ -279,9 +279,9 @@ sfinal=filter(be_PA,ae_PA,soriginal_filtrada_PB);
 figure, plot(tm,sfinal);
 
 %Para la presentación de Prezi añadimos esto
-%sfinal = sfinal/32;
-%sfinal = soriginal_filtrada_PB-sfinal;
-%figure, plot(tm,sfinal);
+sfinal = sfinal/32;
+sfinal = soriginal_filtrada_PB-sfinal;
+figure, plot(tm,sfinal);
 
 %% Actividad 4: Derivación
 
