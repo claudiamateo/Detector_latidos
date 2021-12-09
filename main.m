@@ -299,4 +299,64 @@ D_sfinal_cuadrado=(D_sfinal).^2;
 figure(),plot(D_sfinal_cuadrado);
 
 %% Actividad 5: Detectar los QRS y marcarlos
+% Integracion codigo de la presentacion
+vit = 0.150*Fs; % Ventana integradora
+vit = round(vit);
+b4 = [1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1];
+a4 = vit;
+s_integrada = filter(b4,a4,s_derivada);
+figure, subplot(2,1,1), plot(tm,s_derivada,'b'), title('Señal derivada');
+subplot(2,1,2), plot(tm,s_integrada,'r'), title('Señal integrada');
 
+% Integracion
+D_sfinal_integrada = cumtrapz(D_sfinal_cuadrado);
+figure(),plot(D_sfinal_integrada);
+
+%% Actividad 5.b: Contador de latidos
+u=.4;
+y=0;
+z=0;
+ene=length(s_integrada);
+x7=s_integrada;
+for i=1:ene
+    if x7(i)<u
+        x7(i)=0;
+    end
+    if x7(i)>=u
+        x7(i)=1;
+    end
+end
+subplot(2,1,2), plot(x7)
+title('Resultado del umbral')
+cont=1;
+for i=2:ene-1
+    if x7(i)>x7(i-1)
+        j=i;
+        while z<5
+            m=s_integrada(j)-s_integrada(j-1);
+            if m<.001
+                z=z+1;
+            else
+                z=0;
+            end
+            j=j-1;
+        end
+        ind(cont)=j;
+        cont=cont+1;
+        j=i;
+        z=0;
+        while z<4
+            m=s_integrada(j+1)-s_integrada(j);
+            if m<.001
+                z=z+1;
+            else
+                z=0;
+            end
+            j=j+1;
+        end
+        ind(cont)=j-1;
+        cont=cont+1;
+        z=0;
+        i=i+160;
+    end
+end
