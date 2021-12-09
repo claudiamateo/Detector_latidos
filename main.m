@@ -284,6 +284,11 @@ sfinal = soriginal_filtrada_PB-sfinal;
 figure, plot(tm,sfinal);
 
 %% Actividad 4: Derivación
+%Derivamos sfinal con diff
+D_sfinal=diff(sfinal);
+figure(),plot(D_sfinal);
+D_sfinal_cuadrado=(D_sfinal).^2;
+figure(),plot(D_sfinal_cuadrado);
 
 
 %% Actividad 5: Detectar los QRS y marcarlos

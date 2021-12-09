@@ -6,23 +6,14 @@
 
 clc, close all, clear all;
 % Leemos la señal 119e06 de Physionet
-[sign,Fs,tm] = rdsamp('nsrdb/16265',[],118800,0);
+[sign,Fs,tm] = rdsamp('nsrdb/16265',[],3840,0);
 
-%Elegimos el tamaño de la muestra. Se sabe que el ruido comienza en el
-%minuto 5
+
 frecuencia_de_muestreo = 1/Fs;
-conversion_a_segundos = 5*60;
-primera_muestra_con_ruido = conversion_a_segundos/frecuencia_de_muestreo;
-
-% Como 1/Fs es 0.028 y el ruido comienza pasados 5 minutos segun la BBDD
-% de Noise Stress Test, multiplicamos ese tiempo por 60 para pasarlo a
-% segundos y lo dividimos entre la frecuencia de muestre obtenida. De
-% esta manera, obtenemos un valor (108000) que representa en qué segundo 
-% se produce la primera muestra con ruido.
 
 %Se quieren 30 segundos de la señal. Miramos lo que equivale en muestras de
 %la señal.
-conversion_a_segundos_final = 5.5*60;
+conversion_a_segundos_final = 30;
 ultima_muestra = conversion_a_segundos_final/frecuencia_de_muestreo;
 
 %Se trabajará solo con una derivación de la señal
@@ -271,7 +262,7 @@ subplot(212),plot(tm,FPA_E3),
 title('Señal filtrada paso alto con filtro elíptico de orden 12');
 
 %Mostramos la diferencia entre los filtros elípticos 2 de diferente orden 
-figure('Name','Señal vs Señal filtrada paso bajo con filtro elíptico'),
+figure('Name','Señal vs Señal filtrada paso alto con filtro elíptico'),
 subplot(411),plot(tm,SSC),title('Señal original')
 subplot(412),plot(tm,FPA_E),title('Señal filtrada paso alto con filtro elíptico orden 6'),
 subplot(413),plot(tm,FPA_E2),title('Señal filtrada paso alto con filtro elíptico orden 2'),
@@ -280,20 +271,22 @@ subplot(414),plot(tm,FPA_E3),title('Señal filtrada paso alto con filtro elípti
 
 
 %Señal final con los filtros seleccionados
-%Elegimos el FP elíptico de orden 6
-soriginal_filtrada_PB=FPB_E;
+%Elegimos el FP presentación Prezi
+soriginal_filtrada_PB=SSC_filtrada_paso_bajo;
 figure, plot(tm,soriginal_filtrada_PB);
-%Filtramos esa señal con el filtro elíptico PA de orden 6
-sfinal=filter(be_PA,ae_PA,soriginal_filtrada_PB); 
+%Filtramos esa señal con el filtro elíptico PA de orden 2
+sfinal=filter(b1,a1,soriginal_filtrada_PB); 
 figure, plot(tm,sfinal);
 
 %Para la presentación de Prezi añadimos esto
-%sfinal = sfinal/32;
-%sfinal = soriginal_filtrada_PB-sfinal;
-%figure, plot(tm,sfinal);
+sfinal = sfinal/32;
+sfinal = soriginal_filtrada_PB-sfinal;
+figure, plot(tm,sfinal);
 
 %% Actividad 4: Derivación
-
+%Derivamos sfinal
+D_sfinal=diff(sfinal);
+plot(tm,D_sfinal);
 
 %% Actividad 5: Detectar los QRS y marcarlos
 
