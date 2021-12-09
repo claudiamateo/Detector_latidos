@@ -303,6 +303,7 @@ figure, subplot(2,1,1), plot(tm,sfinal,'b'), title('Señal filtrada derivada');
 subplot(2,1,2), plot(D_sfinal,'r'), title('Señal filtrada derivada elevada al cuadrado');
 
 %% Actividad 5: Detectar los QRS y marcarlos
+<<<<<<< Updated upstream
 %Aplicamos la integral de la función derivada y elevada al cuadrado
 sfinal_integrada=trapz(D_sfinal_cuadrado);
 figure, subplot(2,1,1), plot(D_sfinal,'r'), title('Señal filtrada derivada elevada al cuadrado');
