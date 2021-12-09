@@ -262,7 +262,7 @@ subplot(212),plot(tm,FPA_E3),
 title('Señal filtrada paso alto con filtro elíptico de orden 12');
 
 %Mostramos la diferencia entre los filtros elípticos 2 de diferente orden 
-figure('Name','Señal vs Señal filtrada paso bajo con filtro elíptico'),
+figure('Name','Señal vs Señal filtrada paso alto con filtro elíptico'),
 subplot(411),plot(tm,SSC),title('Señal original')
 subplot(412),plot(tm,FPA_E),title('Señal filtrada paso alto con filtro elíptico orden 6'),
 subplot(413),plot(tm,FPA_E2),title('Señal filtrada paso alto con filtro elíptico orden 2'),
@@ -292,6 +292,11 @@ s_derivada = (s_derivada).^2;
 figure, subplot(2,1,1), plot(tm,sfinal,'b'), title('Señal filtrada');
 subplot(2,1,2), plot(tm,s_derivada,'r'), title('Señal filtrada derivada');
 
+%Derivamos sfinal con diff
+D_sfinal=diff(sfinal);
+figure(),plot(D_sfinal);
+D_sfinal_cuadrado=(D_sfinal).^2;
+figure(),plot(D_sfinal_cuadrado);
 
 %% Actividad 5: Detectar los QRS y marcarlos
 
