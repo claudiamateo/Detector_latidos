@@ -284,6 +284,13 @@ sfinal = soriginal_filtrada_PB-sfinal;
 figure, plot(tm,sfinal);
 
 %% Actividad 4: Derivación
+% Derivacion codigo de la presentacion
+a3 = 8;
+b3 = [2 1 0 -1 -2];
+s_derivada = filter(b3,a3,sfinal);
+s_derivada = (s_derivada).^2;
+figure, subplot(2,1,1), plot(tm,sfinal,'b'), title('Señal filtrada');
+subplot(2,1,2), plot(tm,s_derivada,'r'), title('Señal filtrada derivada');
 
 
 %% Actividad 5: Detectar los QRS y marcarlos
