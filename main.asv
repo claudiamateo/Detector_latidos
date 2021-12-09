@@ -6,7 +6,7 @@
 
 clc, close all, clear all;
 % Leemos la señal 119e06 de Physionet
-[sign,Fs,tm] = rdsamp('nstdb/119e06',[],118800,108000);
+[sign,Fs,tm] = rdsamp('nsrdb/16265',[],118800,0);
 
 %Elegimos el tamaño de la muestra. Se sabe que el ruido comienza en el
 %minuto 5
@@ -155,7 +155,7 @@ figure();
 freqz(be3,ae3), title('Respuesta en frecuencia del filtro Elíptico');
 
 FPB3_E = filter(be3,ae3,SSC); 
-figure('Name','Señal vs Señal filtrada paso alto con filtro elíptico'),
+figure('Name','Señal vs Señal filtrada paso alto con filtro elíptico de orden 12'),
 subplot(211),plot(tm,SSC),title('Señal original sin filtrar'),
 subplot(212),plot(tm,FPB3_E),
 title('Señal filtrada paso bajo con filtro elíptico de orden 12');
@@ -280,17 +280,17 @@ subplot(414),plot(tm,FPA_E3),title('Señal filtrada paso alto con filtro elípti
 
 
 %Señal final con los filtros seleccionados
-
-soriginal_filtrada_PB=FPB3_E;
+%Elegimos el FP elíptico de orden 6
+soriginal_filtrada_PB=FPB_E;
 figure, plot(tm,soriginal_filtrada_PB);
 %Filtramos esa señal con el filtro elíptico PA de orden 6
 sfinal=filter(be_PA,ae_PA,soriginal_filtrada_PB); 
 figure, plot(tm,sfinal);
 
-%Para la presentación de Prezi añadimos esyp
-sfinal = sfinal/32;
-sfinal = soriginal_filtrada_PB-sfinal;
-figure, plot(tm,sfinal);
+%Para la presentación de Prezi añadimos esto
+%sfinal = sfinal/32;
+%sfinal = soriginal_filtrada_PB-sfinal;
+%figure, plot(tm,sfinal);
 
 %% Actividad 4: Derivación
 

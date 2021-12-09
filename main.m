@@ -6,23 +6,14 @@
 
 clc, close all, clear all;
 % Leemos la señal 119e06 de Physionet
-[sign,Fs,tm] = rdsamp('nstdb/119e06',[],118800,108000);
+[sign,Fs,tm] = rdsamp('nsrdb/16265',[],3840,0);
 
-%Elegimos el tamaño de la muestra. Se sabe que el ruido comienza en el
-%minuto 5
+
 frecuencia_de_muestreo = 1/Fs;
-conversion_a_segundos = 5*60;
-primera_muestra_con_ruido = conversion_a_segundos/frecuencia_de_muestreo;
-
-% Como 1/Fs es 0.028 y el ruido comienza pasados 5 minutos segun la BBDD
-% de Noise Stress Test, multiplicamos ese tiempo por 60 para pasarlo a
-% segundos y lo dividimos entre la frecuencia de muestre obtenida. De
-% esta manera, obtenemos un valor (108000) que representa en qué segundo 
-% se produce la primera muestra con ruido.
 
 %Se quieren 30 segundos de la señal. Miramos lo que equivale en muestras de
 %la señal.
-conversion_a_segundos_final = 5.5*60;
+conversion_a_segundos_final = 30;
 ultima_muestra = conversion_a_segundos_final/frecuencia_de_muestreo;
 
 %Se trabajará solo con una derivación de la señal
@@ -155,7 +146,7 @@ figure();
 freqz(be3,ae3), title('Respuesta en frecuencia del filtro Elíptico');
 
 FPB3_E = filter(be3,ae3,SSC); 
-figure('Name','Señal vs Señal filtrada paso alto con filtro elíptico'),
+figure('Name','Señal vs Señal filtrada paso alto con filtro elíptico de orden 12'),
 subplot(211),plot(tm,SSC),title('Señal original sin filtrar'),
 subplot(212),plot(tm,FPB3_E),
 title('Señal filtrada paso bajo con filtro elíptico de orden 12');
