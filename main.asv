@@ -294,17 +294,16 @@ subplot(2,1,2), plot(tm,s_derivada,'r'), title('Señal filtrada derivada');
 
 %Derivamos sfinal con diff
 D_sfinal=diff(sfinal);
-figure, subplot(2,1,1), plot(tm,sfinal,'b'), title('Señal filtrada');
-subplot(2,1,2), plot(D_sfinal,'r'), title('Señal filtrada derivada');
-
-%señal elevada al cuadrado
+figure(),plot(D_sfinal);
 D_sfinal_cuadrado=(D_sfinal).^2;
-figure, subplot(2,1,1), plot(tm,sfinal,'b'), title('Señal filtrada derivada');
-subplot(2,1,2), plot(D_sfinal,'r'), title('Señal filtrada derivada elevada al cuadrado');
+figure(),plot(D_sfinal_cuadrado);
 
 %% Actividad 5: Detectar los QRS y marcarlos
-<<<<<<< Updated upstream
-%Aplicamos la integral de la función derivada y elevada al cuadrado
-sfinal_integrada=trapz(D_sfinal_cuadrado);
-figure, subplot(2,1,1), plot(D_sfinal,'r'), title('Señal filtrada derivada elevada al cuadrado');
-subplot(2,1,2), plot(sfinal_integrada,'r'), title('Integral de la Señal filtrada');
+% Integracion codigo de la presentacion
+ventana_integradora = 0.150*Fs;
+ventana_integradora = round(ventana_integradora);
+b4 = [1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1];
+a4 = ventana_integradora;
+s_integrada = (b4,a4,s_derivada);
+figure, subplot(2,1,1), plot(tm,s_derivada,'b'), title('Señal derivada');
+subplot(2,1,2), plot(tm,s_integrada,'r'), title('Señal integrada');
