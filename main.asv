@@ -72,42 +72,42 @@ Wcb = Fcb/(Fs/2); % Frecuencia de corte normalizada (en radianes)
 [bc2,ac2] = cheby2(6,80,Wcb); % 80 son los decibelios en la banda de rechazo
 
 figure('Name','Respuesta del sistema en frecuencia filtro Chebyshev 2'),
-freqz(bc2,ac2),title('Respuesta en frecuencia del filtro Chebyshev 2');
+freqz(bc2,ac2),title('Respuesta en frecuencia del filtro Chebyshev 2 orden 6');
 
-SSC_filtrada_cheby2=filter(bc2,ac2,SSC);
+SSC_filtrada_cheby2=filtfilt(bc2,ac2,SSC);
 figure('Name','Señal vs Señal filtrada paso bajo con Chebyshev 2'),
 subplot(211),plot(tm,SSC),title('Señal original sin filtrar'),
 subplot(212),plot(tm,SSC_filtrada_cheby2),
-title('Señal filtrada paso bajo con Chebyshev 2');
+title('Señal filtrada paso bajo con Chebyshev 2 orden 6');
 
 %Probamos con un filtro cheby2 de orden 2
 [bc2_2,ac2_2] = cheby2(2,80,Wcb); % 80 son los decibelios en la banda de rechazo
 
 figure('Name','Respuesta del sistema en frecuencia filtro Chebyshev 2'),
-freqz(bc2_2,ac2_2),title('Respuesta en frecuencia del filtro Chebyshev 2');
+freqz(bc2_2,ac2_2),title('Respuesta en frecuencia del filtro Chebyshev 2 orden 2');
 
 SSC_filtrada_2_cheby2=filter(bc2_2,ac2_2,SSC);
 figure('Name','Señal vs Señal filtrada paso bajo con Chebyshev 2'),
 subplot(211),plot(tm,SSC),title('Señal original sin filtrar'),
 subplot(212),plot(tm,SSC_filtrada_2_cheby2),
-title('Señal filtrada paso bajo con filtro Chebyshev 2 de orden 2');
+title('Señal filtrada paso bajo con filtro Chebyshev 2 orden 2');
 
 %Probamos con un filtro cheby 2 de orden 12
 [bc2_12,ac2_12] = cheby2(12,80,Wcb); % 80 son los decibelios en la banda de rechazo
 
 figure('Name','Respuesta del sistema en frecuencia filtro Chebyshev 2'),
-freqz(bc2_12,ac2_12),title('Respuesta en frecuencia del filtro Chebyshev 2');
+freqz(bc2_12,ac2_12),title('Respuesta en frecuencia del filtro Chebyshev 2 orden 12');
 
 SSC_filtrada_12_cheby2=filter(bc2_12,ac2_12,SSC);
 figure('Name','Señal vs Señal filtrada paso bajo con Chebyshev 12'),
 subplot(211),plot(tm,SSC),title('Señal original sin filtrar'),
 subplot(212),plot(tm,SSC_filtrada_12_cheby2),
-title('Señal filtrada paso bajo con filtro Chebyshev 2 de orden 12');
+title('Señal filtrada paso bajo con filtro Chebyshev 2orden 12');
 
 %Mostramos la diferencia entre los filtros Chebyshev 2 de diferente orden 
 figure('Name','Señal vs Señal filtrada paso bajo con filtro Chebyshev 2'),
 subplot(411),plot(tm,SSC),title('Señal original')
-subplot(412),plot(tm,SSC_filtrada_cheby2),title('Señal filtrada paso bajo con filtro elíptico orden 6'),
+subplot(412),plot(tm,SSC_filtrada_cheby2),title('Señal filtrada paso bajo con filtro Chebyshev 2 orden 6'),
 subplot(413),plot(tm,SSC_filtrada_2_cheby2),
 title('Señal filtrada paso bajo con filtro Chebyshev 2 orden 2'),
 subplot(414),plot(tm,SSC_filtrada_12_cheby2),
@@ -120,7 +120,7 @@ title('Señal filtrada paso bajo con filtro Chebyshev 2 orden 12');
 [be,ae] = ellip(6,5,80,Wcb);
 
 figure('Name','Respuesta del sistema en frecuencia filtro elíptico orden 6'),
-freqz(be,ae),title('Respuesta en frecuencia del filtro Elíptico orden 6');
+freqz(be,ae),title('Respuesta en frecuencia del filtro elíptico orden 6');
 
 FPB_E = filter(be,ae,SSC); 
 figure('Name','Señal vs Señal filtrada paso bajo con filtro elíptico orden 6'),
@@ -132,7 +132,7 @@ title('Señal filtrada paso bajo con filtro elíptico orden 6');
 [be2,ae2] = ellip(2,5,80,Wcb);
 
 figure('Name','Respuesta del sistema en frecuencia filtro elíptico orden 2'),
-freqz(be2,ae2),title('Respuesta en frecuencia del filtro Elíptico orden 2');
+freqz(be2,ae2),title('Respuesta en frecuencia del filtro elíptico orden 2');
 
 FPB2_E = filter(be2,ae2,SSC); 
 figure('Name','Señal vs Señal filtrada paso bajo con filtro elíptico'),
@@ -271,11 +271,11 @@ subplot(414),plot(tm,FPA_E3),title('Señal filtrada paso alto con filtro elípti
 
 
 %Señal final con los filtros seleccionados
-%Elegimos el FP presentación Prezi
-soriginal_filtrada_PB=SSC_filtrada_paso_bajo;
+%Elegimos el FP cheby Orden 6
+soriginal_filtrada_PB=SSC_filtrada_cheby2;
 figure, plot(tm,soriginal_filtrada_PB);
 %Filtramos esa señal con el filtro elíptico PA de orden 2
-sfinal=filter(b1,a1,soriginal_filtrada_PB); 
+sfinal=filtfilt(be_PA2,ae_PA2,soriginal_filtrada_PB); 
 figure, plot(tm,sfinal);
 
 %Para la presentación de Prezi añadimos esto
@@ -288,14 +288,13 @@ figure, plot(tm,sfinal);
 a3 = 8;
 b3 = [2 1 0 -1 -2];
 s_derivada = filter(b3,a3,sfinal);
-s_derivada = (s_derivada).^2;
 figure, subplot(2,1,1), plot(tm,sfinal,'b'), title('Señal filtrada');
 subplot(2,1,2), plot(tm,s_derivada,'r'), title('Señal filtrada derivada');
 
 %Derivamos sfinal con diff
 D_sfinal=diff(sfinal);
 figure(),plot(D_sfinal);
-D_sfinal_cuadrado=(D_sfinal).^2;
+D_sfinal_cuadrado=(D_sfinal);
 figure(),plot(D_sfinal_cuadrado);
 
 %% Actividad 5: Detectar los QRS y marcarlos
@@ -309,7 +308,7 @@ figure, subplot(2,1,1), plot(tm,s_derivada,'b'), title('Señal derivada');
 subplot(2,1,2), plot(tm,s_integrada,'r'), title('Señal integrada');
 
 %Marcamos el umbral en 70
-u=35;
+u=0.03;
 ene=length(s_integrada);
 detector_umbral=s_integrada;
 for i=1:ene
@@ -382,20 +381,26 @@ end
 
 verdadero_positivo=0;
 falso_negativo=0;
-ann=ann';
-detector_umbral=detector_umbral';
+
 for i=1:numel(detector_umbral)
     j=1;
-    if detector_umbral(i)==ann(j)
-        disp('Hola Claudia')
-        j=j+1;
-        if detector_umbral==1
-            verdadero_positivo=verdadero_positivo+1;
-        else 
-            falso_negativo=falso_negativo+1;
-        end
+    if detector_umbral(ann(j))==1
+        verdadero_positivo=verdadero_positivo+1;
+    else
+        falso_negativo=falso_negativo+1;
     end
+    j=j+1;
 end
 
+%Pintamos las anotaciones sobre la señal umbral para ver que esto es cierto
+figure("Name","Anotaciones sobre señal umbral");
+plot(tm,detector_umbral);
+hold on;
+grid on;
+plot(tm(ann),detector_umbral(ann),'ro','MarkerSize',4);
 
-sensibiladad= vp/(vp+fn);
+% Para pintar el tipo de anotación al graficar
+text(tm(ann),detector_latido(ann),anntype);
+
+%Calculamos sensibilidad
+sensibilidad= verdadero_positivo/(verdadero_positivo+falso_negativo);
