@@ -74,7 +74,7 @@ Wcb = Fcb/(Fs/2); % Frecuencia de corte normalizada (en radianes)
 figure('Name','Respuesta del sistema en frecuencia filtro Chebyshev 2'),
 freqz(bc2,ac2),title('Respuesta en frecuencia del filtro Chebyshev 2');
 
-SSC_filtrada_cheby2=filter(bc2,ac2,SSC);
+SSC_filtrada_cheby2=filtfilt(bc2,ac2,SSC);
 figure('Name','Señal vs Señal filtrada paso bajo con Chebyshev 2'),
 subplot(211),plot(tm,SSC),title('Señal original sin filtrar'),
 subplot(212),plot(tm,SSC_filtrada_cheby2),
@@ -271,11 +271,11 @@ subplot(414),plot(tm,FPA_E3),title('Señal filtrada paso alto con filtro elípti
 
 
 %Señal final con los filtros seleccionados
-%Elegimos el FP presentación Prezi
-soriginal_filtrada_PB=SSC_filtrada_paso_bajo;
+%Elegimos el FP cheby Orden 6
+soriginal_filtrada_PB=SSC_filtrada_cheby2;
 figure, plot(tm,soriginal_filtrada_PB);
 %Filtramos esa señal con el filtro elíptico PA de orden 2
-sfinal=filter(b1,a1,soriginal_filtrada_PB); 
+sfinal=filtfilt(be_PA2,ae_PA2,soriginal_filtrada_PB); 
 figure, plot(tm,sfinal);
 
 %Para la presentación de Prezi añadimos esto
@@ -288,14 +288,13 @@ figure, plot(tm,sfinal);
 a3 = 8;
 b3 = [2 1 0 -1 -2];
 s_derivada = filter(b3,a3,sfinal);
-s_derivada = (s_derivada).^2;
 figure, subplot(2,1,1), plot(tm,sfinal,'b'), title('Señal filtrada');
 subplot(2,1,2), plot(tm,s_derivada,'r'), title('Señal filtrada derivada');
 
 %Derivamos sfinal con diff
 D_sfinal=diff(sfinal);
 figure(),plot(D_sfinal);
-D_sfinal_cuadrado=(D_sfinal).^2;
+D_sfinal_cuadrado=(D_sfinal);
 figure(),plot(D_sfinal_cuadrado);
 
 %% Actividad 5: Detectar los QRS y marcarlos
@@ -308,45 +307,46 @@ s_integrada = filter(b4,a4,s_derivada);
 figure, subplot(2,1,1), plot(tm,s_derivada,'b'), title('Señal derivada');
 subplot(2,1,2), plot(tm,s_integrada,'r'), title('Señal integrada');
 
-% Integracion
-D_sfinal_integrada = cumtrapz(D_sfinal_cuadrado);
-figure(),plot(D_sfinal_integrada);
-
-%% Actividad 5.b: Contador de latidos
-u=.4;
-y=0;
-z=0;
+%Marcamos el umbral en 70
+u=0.03;
 ene=length(s_integrada);
-x7=s_integrada;
+detector_umbral=s_integrada;
 for i=1:ene
-    if x7(i)<u
-        x7(i)=0;
+    if detector_umbral(i)<u %Si es menor que el umbral igualamos a 0
+        detector_umbral(i)=0;
     end
-    if x7(i)>=u
-        x7(i)=1;
+    if detector_umbral(i)>=u %Si es mayor que el umbral igualamos a 1
+        detector_umbral(i)=1;
     end
 end
-subplot(2,1,2), plot(x7)
-title('Resultado del umbral')
+figure(),subplot(2,1,1), plot(s_integrada),
+title('Señal integrada'),
+subplot(2,1,2), plot(detector_umbral)
+title('Señal con umbral');
+
+
+%% Actividad 5.b: Contador de latidos
+z=0;
 cont=1;
-for i=2:ene-1
-    if x7(i)>x7(i-1)
-        j=i;
+for i=2:ene-1 %desde segunda muestra hasta penultima muestra
+    if detector_umbral(i)>detector_umbral(i-1)
+        j=i; %Guarda la posición en j
         while z<5
-            m=s_integrada(j)-s_integrada(j-1);
-            if m<.001
-                z=z+1;
+            m=detector_umbral(j)-detector_umbral(j-1);
+            if m<.001 %Si los dos puntos distintos tinen una diferencia de valor de 0.001
+                z=z+1; %Añado uno al contador z
             else
-                z=0;
+                z=0; %Sino contador a 0
             end
             j=j-1;
         end
-        ind(cont)=j;
-        cont=cont+1;
+        ind(cont)=j; %Guarda una fila con los valores de j
+        cont=cont+1; %Suma uno al contador
         j=i;
+        
         z=0;
         while z<4
-            m=s_integrada(j+1)-s_integrada(j);
+            m=detector_umbral(j+1)-detector_umbral(j); %Si la posición +1 menos la posicion
             if m<.001
                 z=z+1;
             else
@@ -360,3 +360,47 @@ for i=2:ene-1
         i=i+160;
     end
 end
+
+%% Act 6. Calcular la performance del algoritmo
+%Leemos las anotaciones para saber dónde hay latidos
+[ann,anntype] = rdann('nsrdb/16265','atr',[],3840,0,'N');
+
+%Comparo el número de latidos detectados
+%Número de anotaciones (num latidos)
+
+%Cuento los latidos detectados por mi umbral
+contador_latidos=0;
+for i=1:numel(detector_umbral)
+    if detector_umbral(i)==1 && detector_umbral(i-1)==0
+        contador_latidos=contador_latidos+1;
+    end
+end
+
+
+%Contamos verdaderos positivos y falsos positivos
+
+verdadero_positivo=0;
+falso_negativo=0;
+
+for i=1:numel(detector_umbral)
+    j=1;
+    if detector_umbral(ann(j))==1
+        verdadero_positivo=verdadero_positivo+1;
+    else
+        falso_negativo=falso_negativo+1;
+    end
+    j=j+1;
+end
+
+%Pintamos las anotaciones sobre la señal umbral para ver que esto es cierto
+figure("Name","Anotaciones sobre señal umbral");
+plot(tm,detector_umbral);
+hold on;
+grid on;
+plot(tm(ann),detector_umbral(ann),'ro','MarkerSize',4);
+
+% Para pintar el tipo de anotación al graficar
+text(tm(ann),detector_latido(ann),anntype);
+
+%Calculamos sensibilidad
+sensibilidad= verdadero_positivo/(verdadero_positivo+falso_negativo);

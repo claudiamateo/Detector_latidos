@@ -300,10 +300,102 @@ figure(),plot(D_sfinal_cuadrado);
 
 %% Actividad 5: Detectar los QRS y marcarlos
 % Integracion codigo de la presentacion
-ventana_integradora = 0.150*Fs;
-ventana_integradora = round(ventana_integradora);
+vit = 0.150*Fs; % Ventana integradora
+vit = round(vit);
 b4 = [1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1];
-a4 = ventana_integradora;
-s_integrada = (b4,a4,s_derivada);
+a4 = vit;
+s_integrada = filter(b4,a4,s_derivada);
 figure, subplot(2,1,1), plot(tm,s_derivada,'b'), title('Señal derivada');
 subplot(2,1,2), plot(tm,s_integrada,'r'), title('Señal integrada');
+
+%Marcamos el umbral en 70
+u=35;
+ene=length(s_integrada);
+detector_umbral=s_integrada;
+for i=1:ene
+    if detector_umbral(i)<u %Si es menor que el umbral igualamos a 0
+        detector_umbral(i)=0;
+    end
+    if detector_umbral(i)>=u %Si es mayor que el umbral igualamos a 1
+        detector_umbral(i)=1;
+    end
+end
+figure(),subplot(2,1,1), plot(s_integrada),
+title('Señal integrada'),
+subplot(2,1,2), plot(detector_umbral)
+title('Señal con umbral');
+
+
+%% Actividad 5.b: Contador de latidos
+z=0;
+cont=1;
+for i=2:ene-1 %desde segunda muestra hasta penultima muestra
+    if detector_umbral(i)>detector_umbral(i-1)
+        j=i; %Guarda la posición en j
+        while z<5
+            m=detector_umbral(j)-detector_umbral(j-1);
+            if m<.001 %Si los dos puntos distintos tinen una diferencia de valor de 0.001
+                z=z+1; %Añado uno al contador z
+            else
+                z=0; %Sino contador a 0
+            end
+            j=j-1;
+        end
+        ind(cont)=j; %Guarda una fila con los valores de j
+        cont=cont+1; %Suma uno al contador
+        j=i;
+        
+        z=0;
+        while z<4
+            m=detector_umbral(j+1)-detector_umbral(j); %Si la posición +1 menos la posicion
+            if m<.001
+                z=z+1;
+            else
+                z=0;
+            end
+            j=j+1;
+        end
+        ind(cont)=j-1;
+        cont=cont+1;
+        z=0;
+        i=i+160;
+    end
+end
+
+%% Act 6. Calcular la performance del algoritmo
+%Leemos las anotaciones para saber dónde hay latidos
+[ann,anntype] = rdann('nsrdb/16265','atr',[],3840,0,'N');
+
+%Comparo el número de latidos detectados
+%Número de anotaciones (num latidos)
+
+%Cuento los latidos detectados por mi umbral
+contador_latidos=0;
+for i=1:numel(detector_umbral)
+    if detector_umbral(i)==1 && detector_umbral(i-1)==0
+        contador_latidos=contador_latidos+1;
+    end
+end
+
+
+%Contamos verdaderos positivos y falsos positivos
+
+verdadero_positivo=0;
+falso_negativo=0;
+ann=ann';
+detector_umbral=detector_umbral';
+for i=1:numel(detector_umbral)
+    j=1;
+    if detector_umbral(i)==ann(j)
+        disp('Hola Claudia')
+        j=j+1;
+        if detector_umbral==1
+            verdadero_positivo=verdadero_positivo+1;
+        else 
+            falso_negativo=falso_negativo+1;
+        end
+    end
+end
+
+
+sensibiladad= vp/(vp+fn);
