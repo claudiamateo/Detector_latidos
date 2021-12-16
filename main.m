@@ -8,7 +8,7 @@ clc, close all, clear all;
 
 % Leemos la señal de Physionet
 % Registro 1
-[sign,Fs,tm] = rdsamp('nsrdb/16265',[],3840,0);
+% [sign,Fs,tm] = rdsamp('nsrdb/16265',[],3840,0);
 % Registro 2
 %[sign,Fs,tm] = rdsamp('nsrdb/16272',[],3840,0);
 % Registro 3
@@ -18,9 +18,9 @@ clc, close all, clear all;
 % Registro 5
 %[sign,Fs,tm] = rdsamp('nsrdb/16483',[],3840,0);
 % Registro 6
-%[sign,Fs,tm] = rdsamp('nsrdb/16539',[],3840,0);
+% [sign,Fs,tm] = rdsamp('nsrdb/16539',[],3840,0);
 % Registro 7
-%[sign,Fs,tm] = rdsamp('nsrdb/16773',[],3840,0);
+[sign,Fs,tm] = rdsamp('nsrdb/16773',[],3840,0);
 % Registro 8
 %[sign,Fs,tm] = rdsamp('nsrdb/16786',[],3840,0);
 % Registro 9
@@ -388,7 +388,7 @@ for i=2:ene-1 %desde segunda muestra hasta penultima muestra
         j=i;
 
         z=0;
-        while z<15
+        while z<15 && j<(ene-1)
             m=detector_umbral(j+1)-detector_umbral(j); %Si la posición +1 menos la posicion
             if m<.001
                 z=z+1;
@@ -414,13 +414,13 @@ end
 %% Act 6. Calcular la performance del algoritmo
 
 %Leemos las anotaciones para saber dónde hay latidos
-[ann,anntype] = rdann('nsrdb/16265','atr',[],3840,0,'N');
+% [ann,anntype] = rdann('nsrdb/16265','atr',[],3840,0,'N');
 % [ann,anntype] = rdann('nsrdb/16272','atr',[],3840,0,'N');
 %[ann,anntype] = rdann('nsrdb/16273','atr',[],3840,0,'N');
 %[ann,anntype] = rdann('nsrdb/16420','atr',[],3840,0,'N');
 % [ann,anntype] = rdann('nsrdb/16483','atr',[],3840,0,'N');
-%[ann,anntype] = rdann('nsrdb/16539','atr',[],3840,0,'N');
-%[ann,anntype] = rdann('nsrdb/16773','atr',[],3840,0,'N');
+% [ann,anntype] = rdann('nsrdb/16539','atr',[],3840,0,'N');
+[ann,anntype] = rdann('nsrdb/16773','atr',[],3840,0,'N');
 %[ann,anntype] = rdann('nsrdb/16786','atr',[],3840,0,'N');
 %[ann,anntype] = rdann('nsrdb/16795','atr',[],3840,0,'N');
 % [ann,anntype] = rdann('nsrdb/17052','atr',[],3840,0,'N');
