@@ -71,11 +71,9 @@ title('TF de la señal sin continua');
 %Normalizamos la señal
 mins=min(SSC);
 SSC=SSC-mins; %El punto mínimo será 0
-
 maxs=max(SSC);
 SSC=SSC/maxs; % El valor máximo ahora valdrá 1 y los demás valores estarán entre 0 y 1.
-figure("Name",'Señal original en el dominio de la frecuencia');
-plot(tm,SSC,'b');
+
 %% 3. Filtrado de artefactos en la señal ECG
 
 %% 3.1. Filtro paso bajo para eliminar altas frecuencias
