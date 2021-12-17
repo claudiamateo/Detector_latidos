@@ -20,9 +20,9 @@ clc, close all, clear all;
 % Registro 6
 %[sign,Fs,tm] = rdsamp('nsrdb/16539',[],3840,0);
 % Registro 7
-[sign,Fs,tm] = rdsamp('nsrdb/16773',[],3840,0);
+% [sign,Fs,tm] = rdsamp('nsrdb/16773',[],3840,0);
 % Registro 8
-%[sign,Fs,tm] = rdsamp('nsrdb/16786',[],3840,0);
+[sign,Fs,tm] = rdsamp('nsrdb/16786',[],3840,0);
 % Registro 9
 %[sign,Fs,tm] = rdsamp('nsrdb/16795',[],3840,0);
 % Registro 10
@@ -398,8 +398,8 @@ end
 %[ann,anntype] = rdann('nsrdb/16420','atr',[],3840,0,'N');
 %[ann,anntype] = rdann('nsrdb/16483','atr',[],3840,0,'N');
 %[ann,anntype] = rdann('nsrdb/16539','atr',[],3840,0,'N');
-[ann,anntype] = rdann('nsrdb/16773','atr',[],3840,0,'N');
-%[ann,anntype] = rdann('nsrdb/16786','atr',[],3840,0,'N');
+% [ann,anntype] = rdann('nsrdb/16773','atr',[],3840,0,'N');
+[ann,anntype] = rdann('nsrdb/16786','atr',[],3840,0,'N');
 %[ann,anntype] = rdann('nsrdb/16795','atr',[],3840,0,'N');
 % [ann,anntype] = rdann('nsrdb/17052','atr',[],3840,0,'N');
 
@@ -426,7 +426,7 @@ end
 verdadero_positivo=0;
 falso_negativo=0;
 j=1;
-for i=1:numel(ann)
+for i=1:numel(ann)-10
     if detector_umbral(ann(j))==1 || detector_umbral(ann(j)+10)==1
         verdadero_positivo=verdadero_positivo+1;
     else
