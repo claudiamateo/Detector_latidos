@@ -332,7 +332,7 @@ s_derivada=s_derivada/maxs;
 % D_sfinal_cuadrado=(D_sfinal);
 % figure(),plot(D_sfinal_cuadrado);
 
-%% Actividad 5: Detectar los QRS y marcarlos
+%% Actividad 5: Detectar los QRS
 % Integracion codigo de la presentacion
 vit = 0.150*Fs; % Ventana integradora
 vit = round(vit);
@@ -389,7 +389,7 @@ for i=2:(ene-1) %desde segunda muestra hasta penultima muestra
 end
 
 
-%% Act 6. Calcular la performance del algoritmo
+%% Act 6. Calcular la performance del algoritmo y marcar inicio y final QRS
 
 %Leemos las anotaciones para saber dónde hay latidos
 %[ann,anntype] = rdann('nsrdb/16265','atr',[],3840,0,'N');

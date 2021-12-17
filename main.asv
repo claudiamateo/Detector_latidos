@@ -20,9 +20,9 @@ clc, close all, clear all;
 % Registro 6
 %[sign,Fs,tm] = rdsamp('nsrdb/16539',[],3840,0);
 % Registro 7
-[sign,Fs,tm] = rdsamp('nsrdb/16773',[],3840,0);
+% [sign,Fs,tm] = rdsamp('nsrdb/16773',[],3840,0);
 % Registro 8
-%[sign,Fs,tm] = rdsamp('nsrdb/16786',[],3840,0);
+[sign,Fs,tm] = rdsamp('nsrdb/16786',[],3840,0);
 % Registro 9
 %[sign,Fs,tm] = rdsamp('nsrdb/16795',[],3840,0);
 % Registro 10
@@ -332,7 +332,7 @@ s_derivada=s_derivada/maxs;
 % D_sfinal_cuadrado=(D_sfinal);
 % figure(),plot(D_sfinal_cuadrado);
 
-%% Actividad 5: Detectar los QRS y marcarlos
+%% Actividad 5: Detectar los QRS
 % Integracion codigo de la presentacion
 vit = 0.150*Fs; % Ventana integradora
 vit = round(vit);
@@ -385,33 +385,9 @@ for i=2:(ene-1) %desde segunda muestra hasta penultima muestra
             end
             j=j-1;
         end
-        ind(cont)=j; %Guarda una fila con los valores de j
-        cont=cont+1; %Suma uno al contador
-        j=i;
-
-        z=0;
-        while z<4 && j<(ene-1)
-            m=detector_umbral(j+1)-detector_umbral(j); %Si la posición +1 menos la posicion
-            if m<.001
-                z=z+1;
-            else
-                z=0;
-            end
-            j=j+1;
-        end
-        ind(cont)=j-1;
-        cont=cont+1;
-        z=0;
-        i=i+160;
     end
 end
 
-
-%Pintamos la señal
-figure(),plot(tm,sfinal), hold on,
-for i=1:numel(ind)
-    plot(tm(ind(i)),sfinal(ind(i)),'x- ')
-end
 
 %% Act 6. Calcular la performance del algoritmo
 
@@ -422,37 +398,35 @@ end
 %[ann,anntype] = rdann('nsrdb/16420','atr',[],3840,0,'N');
 %[ann,anntype] = rdann('nsrdb/16483','atr',[],3840,0,'N');
 %[ann,anntype] = rdann('nsrdb/16539','atr',[],3840,0,'N');
-[ann,anntype] = rdann('nsrdb/16773','atr',[],3840,0,'N');
-%[ann,anntype] = rdann('nsrdb/16786','atr',[],3840,0,'N');
+% [ann,anntype] = rdann('nsrdb/16773','atr',[],3840,0,'N');
+[ann,anntype] = rdann('nsrdb/16786','atr',[],3840,0,'N');
 %[ann,anntype] = rdann('nsrdb/16795','atr',[],3840,0,'N');
 % [ann,anntype] = rdann('nsrdb/17052','atr',[],3840,0,'N');
 
 %Cuento los latidos detectados por mi umbral
 contador_latidos=0;
 detector_umbral=detector_umbral';
-detector=[];
-for i=2:numel(detector_umbral)
+detector=[]; %Para guardar el principio y el final
+for i=2:numel(detector_umbral)-1
     if detector_umbral(i)==1 && detector_umbral(i-1)==0
         contador_latidos=contador_latidos+1;
         detector=[detector i];
     elseif detector_umbral(i)==1 && detector_umbral(i+1)==0
         detector=[detector i];
-
     end
-
 end
 
-%Pintamos la señal
+%Pintamos la señal con principio y final
 figure(),plot(tm,sfinal), hold on,
 for i=1:numel(detector)
-    plot(tm(detector(i)),sfinal(detect(i)),'x- ')
+    plot(tm(detector(i)),sfinal(detector(i)),'x- ')
 end
 
 %Contamos verdaderos positivos y falsos positivos
 verdadero_positivo=0;
 falso_negativo=0;
 j=1;
-for i=1:numel(ann)
+for i=1:numel(ann)-10
     if detector_umbral(ann(j))==1 || detector_umbral(ann(j)+10)==1
         verdadero_positivo=verdadero_positivo+1;
     else
