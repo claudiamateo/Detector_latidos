@@ -8,7 +8,7 @@ clc, close all, clear all;
 
 % Leemos la señal de Physionet
 % Registro 1
-[sign,Fs,tm] = rdsamp('nsrdb/16265',[],3840,0);
+%[sign,Fs,tm] = rdsamp('nsrdb/16265',[],3840,0);
 % Registro 2
 %[sign,Fs,tm] = rdsamp('nsrdb/16272',[],3840,0);
 % Registro 3
@@ -20,7 +20,7 @@ clc, close all, clear all;
 % Registro 6
 %[sign,Fs,tm] = rdsamp('nsrdb/16539',[],3840,0);
 % Registro 7
-%[sign,Fs,tm] = rdsamp('nsrdb/16773',[],3840,0);
+[sign,Fs,tm] = rdsamp('nsrdb/16773',[],3840,0);
 % Registro 8
 %[sign,Fs,tm] = rdsamp('nsrdb/16786',[],3840,0);
 % Registro 9
@@ -94,17 +94,17 @@ SSC=SSC/maxs; % El valor máximo ahora valdrá 1 y los demás valores estarán e
 Fcb = 15; % Frecuencia de corte (en Hz)
 Wcb = Fcb/(Fs/2); % Frecuencia de corte normalizada (en radianes)
 
-%Probamos con un filtro cheby2 de orden 6
-[bc2,ac2] = cheby2(6,80,Wcb); % 80 son los decibelios en la banda de rechazo
-
-figure('Name','Respuesta del sistema en frecuencia filtro Chebyshev 2'),
-freqz(bc2,ac2),title('Respuesta en frecuencia del filtro Chebyshev 2');
-
-SSC_filtrada_cheby2=filtfilt(bc2,ac2,SSC);
-figure('Name','Señal vs Señal filtrada paso bajo con Chebyshev 2'),
-subplot(211),plot(tm,SSC),title('Señal original sin filtrar'),
-subplot(212),plot(tm,SSC_filtrada_cheby2),
-title('Señal filtrada paso bajo con Chebyshev 2');
+% %Probamos con un filtro cheby2 de orden 6
+% [bc2,ac2] = cheby2(6,80,Wcb); % 80 son los decibelios en la banda de rechazo
+% 
+% figure('Name','Respuesta del sistema en frecuencia filtro Chebyshev 2'),
+% freqz(bc2,ac2),title('Respuesta en frecuencia del filtro Chebyshev 2');
+% 
+% SSC_filtrada_cheby2=filtfilt(bc2,ac2,SSC);
+% figure('Name','Señal vs Señal filtrada paso bajo con Chebyshev 2'),
+% subplot(211),plot(tm,SSC),title('Señal original sin filtrar'),
+% subplot(212),plot(tm,SSC_filtrada_cheby2),
+% title('Señal filtrada paso bajo con Chebyshev 2');
 
 % %Probamos con un filtro cheby2 de orden 2
 % [bc2_2,ac2_2] = cheby2(2,80,Wcb); % 80 son los decibelios en la banda de rechazo
@@ -154,17 +154,17 @@ title('Señal filtrada paso bajo con Chebyshev 2');
 % subplot(212),plot(tm,FPB_E),
 % title('Señal filtrada paso bajo con filtro elíptico orden 6');
 % 
-% %Probamos con un filtro elíptico de orden 2
-% [be2,ae2] = ellip(2,5,80,Wcb);
-% 
-% figure('Name','Respuesta del sistema en frecuencia filtro elíptico orden 2'),
-% freqz(be2,ae2),title('Respuesta en frecuencia del filtro Elíptico orden 2');
-% 
-% FPB2_E = filter(be2,ae2,SSC); 
-% figure('Name','Señal vs Señal filtrada paso bajo con filtro elíptico'),
-% subplot(211),plot(tm,SSC),title('Señal original sin filtrar'),
-% subplot(212),plot(tm,FPB2_E),
-% title('Señal filtrada paso bajo con filtro elíptico orden 2');
+%Probamos con un filtro elíptico de orden 2
+[be2,ae2] = ellip(2,5,80,Wcb);
+
+figure('Name','Respuesta del sistema en frecuencia filtro elíptico orden 2'),
+freqz(be2,ae2),title('Respuesta en frecuencia del filtro Elíptico orden 2');
+
+FPB2_E = filtfilt(be2,ae2,SSC); 
+figure('Name','Señal vs Señal filtrada paso bajo con filtro elíptico'),
+subplot(211),plot(tm,SSC),title('Señal original sin filtrar'),
+subplot(212),plot(tm,FPB2_E),
+title('Señal filtrada paso bajo con filtro elíptico orden 2');
 
 % %Probamos con Filtro elíptico de orden 12.
 % [be3,ae3] = ellip(12,5,80,Wcb);
@@ -298,7 +298,7 @@ title('Señal filtrada paso alto con filtro elíptico de orden 2');
 
 %Señal final con los filtros seleccionados
 %Elegimos el FP cheby Orden 6
-soriginal_filtrada_PB=SSC_filtrada_cheby2;
+soriginal_filtrada_PB=FPB2_E;
 figure, plot(tm,soriginal_filtrada_PB);
 %Filtramos esa señal con el filtro elíptico PA de orden 2
 sfinal=filtfilt(be_PA2,ae_PA2,soriginal_filtrada_PB); 
@@ -321,8 +321,10 @@ subplot(2,1,2), plot(tm,s_derivada,'r'), title('Señal filtrada derivada');
 mins=min(s_derivada);
 s_derivada=s_derivada-mins;
 
-maxs=max(s_derivada);
+maxs=max(s_derivada(50:end-50));
+
 s_derivada=s_derivada/maxs;
+
 
 % %Derivamos sfinal con diff
 % D_sfinal=diff(sfinal);
@@ -371,7 +373,7 @@ title('Señal con umbral');
 z=0;
 cont=1;
 ind=[];
-for i=2:ene-1 %desde segunda muestra hasta penultima muestra
+for i=2:(ene-1) %desde segunda muestra hasta penultima muestra
     j=i;
     if detector_umbral(i)>detector_umbral(i-1) && j>=2
         while z<5 && j>=2
@@ -383,44 +385,20 @@ for i=2:ene-1 %desde segunda muestra hasta penultima muestra
             end
             j=j-1;
         end
-        ind(cont)=j; %Guarda una fila con los valores de j
-        cont=cont+1; %Suma uno al contador
-        j=i;
-
-        z=0;
-        while z<15
-            m=detector_umbral(j+1)-detector_umbral(j); %Si la posición +1 menos la posicion
-            if m<.001
-                z=z+1;
-            else
-                z=0;
-            end
-            j=j+1;
-        end
-        ind(cont)=j-1;
-        cont=cont+1;
-        z=0;
-        i=i+160;
     end
 end
 
 
-%Pintamos la señal
-figure(),plot(tm,sfinal), hold on,
-for i=1:numel(ind)
-    plot(tm(ind(i)),sfinal(ind(i)),'x- ')
-end
-
 %% Act 6. Calcular la performance del algoritmo
 
 %Leemos las anotaciones para saber dónde hay latidos
-[ann,anntype] = rdann('nsrdb/16265','atr',[],3840,0,'N');
-% [ann,anntype] = rdann('nsrdb/16272','atr',[],3840,0,'N');
+%[ann,anntype] = rdann('nsrdb/16265','atr',[],3840,0,'N');
+%[ann,anntype] = rdann('nsrdb/16272','atr',[],3840,0,'N');
 %[ann,anntype] = rdann('nsrdb/16273','atr',[],3840,0,'N');
 %[ann,anntype] = rdann('nsrdb/16420','atr',[],3840,0,'N');
-% [ann,anntype] = rdann('nsrdb/16483','atr',[],3840,0,'N');
+%[ann,anntype] = rdann('nsrdb/16483','atr',[],3840,0,'N');
 %[ann,anntype] = rdann('nsrdb/16539','atr',[],3840,0,'N');
-%[ann,anntype] = rdann('nsrdb/16773','atr',[],3840,0,'N');
+[ann,anntype] = rdann('nsrdb/16773','atr',[],3840,0,'N');
 %[ann,anntype] = rdann('nsrdb/16786','atr',[],3840,0,'N');
 %[ann,anntype] = rdann('nsrdb/16795','atr',[],3840,0,'N');
 % [ann,anntype] = rdann('nsrdb/17052','atr',[],3840,0,'N');
@@ -428,11 +406,20 @@ end
 %Cuento los latidos detectados por mi umbral
 contador_latidos=0;
 detector_umbral=detector_umbral';
-for i=2:numel(detector_umbral)
+detector=[]; %Para guardar el principio y el final
+for i=2:numel(detector_umbral)-1
     if detector_umbral(i)==1 && detector_umbral(i-1)==0
         contador_latidos=contador_latidos+1;
+        detector=[detector i];
+    elseif detector_umbral(i)==1 && detector_umbral(i+1)==0
+        detector=[detector i];
     end
+end
 
+%Pintamos la señal con principio y final
+figure(),plot(tm,sfinal), hold on,
+for i=1:numel(detector)
+    plot(tm(detector(i)),sfinal(detector(i)),'x- ')
 end
 
 %Contamos verdaderos positivos y falsos positivos
@@ -440,7 +427,7 @@ verdadero_positivo=0;
 falso_negativo=0;
 j=1;
 for i=1:numel(ann)
-    if detector_umbral(ann(j))==1
+    if detector_umbral(ann(j))==1 || detector_umbral(ann(j)+10)==1
         verdadero_positivo=verdadero_positivo+1;
     else
         falso_negativo=falso_negativo+1;
