@@ -425,6 +425,7 @@ end
 %Contamos verdaderos positivos y falsos positivos
 verdadero_positivo=0;
 falso_negativo=0;
+falso_positivo=0;
 j=1;
 for i=1:numel(ann)-10
     if detector_umbral(ann(j))==1 || detector_umbral(ann(j)+10)==1
@@ -447,3 +448,9 @@ text(tm(ann),detector_umbral(ann),anntype);
 
 %Calculamos sensibilidad
 sensibilidad= verdadero_positivo/(verdadero_positivo+falso_negativo);
+
+% Calculamos valor predictivo positivo
+valor_pv = verdadero_positivo/(falso_positivo+verdadero_positivo); 
+%Nunca va a haber un falso positivo, ya que antes de decir si hay latido se
+%verifica que haya una anotación, por tanto el valor predictivo positivo
+%siempre va a ser 1

@@ -389,7 +389,7 @@ for i=2:(ene-1) %desde segunda muestra hasta penultima muestra
 end
 
 
-%% Act 6. Calcular la performance del algoritmo
+%% Act 6. Calcular la performance del algoritmo y marcar inicio y final QRS
 
 %Leemos las anotaciones para saber dónde hay latidos
 %[ann,anntype] = rdann('nsrdb/16265','atr',[],3840,0,'N');
@@ -435,6 +435,9 @@ for i=1:numel(ann)-10
     j=j+1;
 end
 
+falso_positivo=0;
+
+
 %Pintamos las anotaciones sobre la señal umbral para ver que esto es cierto
 figure("Name","Anotaciones sobre señal umbral");
 plot(tm,detector_umbral);
@@ -447,3 +450,6 @@ text(tm(ann),detector_umbral(ann),anntype);
 
 %Calculamos sensibilidad
 sensibilidad= verdadero_positivo/(verdadero_positivo+falso_negativo);
+
+% Calculamos valor predictivo positivo
+valor_pv = verdadero_positivo/(falso_positivo+verdadero_positivo);
