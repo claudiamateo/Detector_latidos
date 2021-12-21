@@ -14,7 +14,7 @@ clc, close all, clear all;
 % Registro 3
 %[sign,Fs,tm] = rdsamp('nsrdb/16273',[],3840,0);
 % Registro 4
-%[sign,Fs,tm] = rdsamp('nsrdb/16420',[],3840,0);
+[sign,Fs,tm] = rdsamp('nsrdb/16420',[],3840,0);
 % Registro 5
 %[sign,Fs,tm] = rdsamp('nsrdb/16483',[],3840,0);
 % Registro 6
@@ -22,7 +22,7 @@ clc, close all, clear all;
 % Registro 7
 % [sign,Fs,tm] = rdsamp('nsrdb/16773',[],3840,0);
 % Registro 8
-[sign,Fs,tm] = rdsamp('nsrdb/16786',[],3840,0);
+%[sign,Fs,tm] = rdsamp('nsrdb/16786',[],3840,0);
 % Registro 9
 %[sign,Fs,tm] = rdsamp('nsrdb/16795',[],3840,0);
 % Registro 10
@@ -44,6 +44,7 @@ soriginal= sign(:,1);
 %dominio del tiempo.
 figure('Name', 'Señal original en el dominio del tiempo'),
 plot(tm, soriginal), title('Señal original');
+xlabel('Tiempo(s)'),ylabel('Amplitud (mV)');
 
 %Visualizamos en  el dominio de la frecuencia
 TF_sign = fftshift(fft(sign));
@@ -58,6 +59,7 @@ title('TF de la señal original');
 SSC= soriginal(:,1)-mean(soriginal(:,1));
 figure('Name','Señal original sin componente continua'), plot(tm,SSC),
 title('Señal original sin componente continua');
+xlabel('Tiempo(s)'),ylabel('Amplitud (mV)');
 
 %Visualizamos en el dominio de la frecuencia la señal ahora sin componente
 %continua
@@ -73,6 +75,10 @@ mins=min(SSC);
 SSC=SSC-mins; %El punto mínimo será 0
 maxs=max(SSC);
 SSC=SSC/maxs; % El valor máximo ahora valdrá 1 y los demás valores estarán entre 0 y 1.
+figure('Name','Señal original sin componente continua normalizada'), plot(tm,SSC),
+title('Señal original sin componente continua normalizada');
+xlabel('Tiempo(s)'),ylabel('Amplitud (mV)');
+
 
 %% 3. Filtrado de artefactos en la señal ECG
 
@@ -105,7 +111,7 @@ Wcb = Fcb/(Fs/2); % Frecuencia de corte normalizada (en radianes)
 % subplot(211),plot(tm,SSC),title('Señal original sin filtrar'),
 % subplot(212),plot(tm,SSC_filtrada_cheby2),
 % title('Señal filtrada paso bajo con Chebyshev 2');
-
+% 
 % %Probamos con un filtro cheby2 de orden 2
 % [bc2_2,ac2_2] = cheby2(2,80,Wcb); % 80 son los decibelios en la banda de rechazo
 % 
@@ -117,7 +123,7 @@ Wcb = Fcb/(Fs/2); % Frecuencia de corte normalizada (en radianes)
 % subplot(211),plot(tm,SSC),title('Señal original sin filtrar'),
 % subplot(212),plot(tm,SSC_filtrada_2_cheby2),
 % title('Señal filtrada paso bajo con filtro Chebyshev 2 de orden 2');
-
+% 
 % %Probamos con un filtro cheby 2 de orden 12
 % [bc2_12,ac2_12] = cheby2(12,80,Wcb); % 80 son los decibelios en la banda de rechazo
 % 
@@ -139,8 +145,8 @@ Wcb = Fcb/(Fs/2); % Frecuencia de corte normalizada (en radianes)
 % subplot(414),plot(tm,SSC_filtrada_12_cheby2),
 % title('Señal filtrada paso bajo con filtro Chebyshev 2 orden 12');
 
-
-
+% 
+% 
 % 
 % %Probamos con el filtro elíptico de orden 6
 % [be,ae] = ellip(6,5,80,Wcb);
@@ -153,7 +159,7 @@ Wcb = Fcb/(Fs/2); % Frecuencia de corte normalizada (en radianes)
 % subplot(211),plot(tm,SSC),title('Señal original sin filtrar'),
 % subplot(212),plot(tm,FPB_E),
 % title('Señal filtrada paso bajo con filtro elíptico orden 6');
-% 
+
 %Probamos con un filtro elíptico de orden 2
 [be2,ae2] = ellip(2,5,80,Wcb);
 
@@ -166,16 +172,16 @@ subplot(211),plot(tm,SSC),title('Señal original sin filtrar'),
 subplot(212),plot(tm,FPB2_E),
 title('Señal filtrada paso bajo con filtro elíptico orden 2');
 
-% %Probamos con Filtro elíptico de orden 12.
-% [be3,ae3] = ellip(12,5,80,Wcb);
-% figure();
-% freqz(be3,ae3), title('Respuesta en frecuencia del filtro Elíptico');
-% 
-% FPB3_E = filter(be3,ae3,SSC); 
-% figure('Name','Señal vs Señal filtrada paso alto con filtro elíptico de orden 12'),
-% subplot(211),plot(tm,SSC),title('Señal original sin filtrar'),
-% subplot(212),plot(tm,FPB3_E),
-% title('Señal filtrada paso bajo con filtro elíptico de orden 12');
+%Probamos con Filtro elíptico de orden 12.
+[be3,ae3] = ellip(12,5,80,Wcb);
+figure();
+freqz(be3,ae3), title('Respuesta en frecuencia del filtro Elíptico');
+
+FPB3_E = filter(be3,ae3,SSC); 
+figure('Name','Señal vs Señal filtrada paso alto con filtro elíptico de orden 12'),
+subplot(211),plot(tm,SSC),title('Señal original sin filtrar'),
+subplot(212),plot(tm,FPB3_E),
+title('Señal filtrada paso bajo con filtro elíptico de orden 12');
 % 
 % %Mostramos la diferencia entre los filtros elípticos 2 del mismo orden 
 % figure('Name','Señal vs Señal filtrada paso bajo con filtro elíptico'),
@@ -206,7 +212,7 @@ Wca = Fca/(Fs/2); % Frecuencia de corte normalizada (en radianes)
 
 
 
-%Probamos con filtro Chebyshev 2 de orden 6.
+% %Probamos con filtro Chebyshev 2 de orden 6.
 % [bc2_PA,ac2_PA] = cheby2(6,80,Wca,'high'); % 80 son los decibelos en la banda de rechazo
 % figure; 
 % freqz(bc2_PA,ac2_PA), title('Respuesta en frecuencia del filtro PA Chebysehv 2 orden 6');
@@ -253,7 +259,7 @@ Wca = Fca/(Fs/2); % Frecuencia de corte normalizada (en radianes)
 
 
 
-% 
+
 % %Probamos con Filtro elíptico de orden 6.
 % [be_PA,ae_PA] = ellip(6,5,80,Wca,'high');
 % figure();
@@ -275,7 +281,7 @@ figure('Name','Señal vs Señal filtrada paso alto con filtro elíptico'),
 subplot(211),plot(tm,SSC),title('Señal original sin filtrar'),
 subplot(212),plot(tm,FPA_E2),
 title('Señal filtrada paso alto con filtro elíptico de orden 2');
-% 
+
 % %Probamos con Filtro elíptico de orden 12.
 % [be_PA3,ae_PA3] = ellip(12,5,80,Wca,'high');
 % figure();
@@ -286,13 +292,13 @@ title('Señal filtrada paso alto con filtro elíptico de orden 2');
 % subplot(211),plot(tm,SSC),title('Señal original sin filtrar'),
 % subplot(212),plot(tm,FPA_E3),
 % title('Señal filtrada paso alto con filtro elíptico de orden 12');
-
+% 
 % %Mostramos la diferencia entre los filtros elípticos 2 de diferente orden 
 % figure('Name','Señal vs Señal filtrada paso alto con filtro elíptico'),
 % subplot(411),plot(tm,SSC),title('Señal original')
 % subplot(412),plot(tm,FPA_E),title('Señal filtrada paso alto con filtro elíptico orden 6'),
 % subplot(413),plot(tm,FPA_E2),title('Señal filtrada paso alto con filtro elíptico orden 2'),
-% % subplot(414),plot(tm,FPA_E3),title('Señal filtrada paso alto con filtro elíptico orden 12');
+% subplot(414),plot(tm,FPA_E3),title('Señal filtrada paso alto con filtro elíptico orden 12');
 
 
 
@@ -303,7 +309,7 @@ figure, plot(tm,soriginal_filtrada_PB);
 %Filtramos esa señal con el filtro elíptico PA de orden 2
 sfinal=filtfilt(be_PA2,ae_PA2,soriginal_filtrada_PB); 
 figure, plot(tm,sfinal);
-% % 
+% 
 %Para la presentación de Prezi añadimos esto
 sfinal = sfinal/32;
 sfinal = soriginal_filtrada_PB-sfinal;
@@ -313,18 +319,20 @@ figure, plot(tm,sfinal);
 % Derivacion codigo de la presentacion
 a3 = 8;
 b3 = [2 1 0 -1 -2];
-s_derivada = (filter(b3,a3,sfinal).^2);
+s_derivada = filter(b3,a3,sfinal);
 figure, subplot(2,1,1), plot(tm,sfinal,'b'), title('Señal filtrada');
 subplot(2,1,2), plot(tm,s_derivada,'r'), title('Señal filtrada derivada');
+s_derivada=(filter(b3,a3,sfinal)).^2;
+figure, subplot(2,1,1), plot(tm,sfinal,'b'), title('Señal filtrada');
+subplot(2,1,2), plot(tm,s_derivada,'r'), title('Señal filtrada derivada al cuadrado');
 
 %Normalizamos la señal
 mins=min(s_derivada);
 s_derivada=s_derivada-mins;
-
 maxs=max(s_derivada(50:end-50));
 
 s_derivada=s_derivada/maxs;
-
+figure, plot(tm,s_derivada,'b'), title('Señal derivada y elevada al cuadrado normalizada');
 
 % %Derivamos sfinal con diff
 % D_sfinal=diff(sfinal);
@@ -394,12 +402,12 @@ end
 %Leemos las anotaciones para saber dónde hay latidos
 %[ann,anntype] = rdann('nsrdb/16265','atr',[],3840,0,'N');
 %[ann,anntype] = rdann('nsrdb/16272','atr',[],3840,0,'N');
-%[ann,anntype] = rdann('nsrdb/16273','atr',[],3840,0,'N');
+[ann,anntype] = rdann('nsrdb/16273','atr',[],3840,0,'N');
 %[ann,anntype] = rdann('nsrdb/16420','atr',[],3840,0,'N');
 %[ann,anntype] = rdann('nsrdb/16483','atr',[],3840,0,'N');
 %[ann,anntype] = rdann('nsrdb/16539','atr',[],3840,0,'N');
 % [ann,anntype] = rdann('nsrdb/16773','atr',[],3840,0,'N');
-[ann,anntype] = rdann('nsrdb/16786','atr',[],3840,0,'N');
+%[ann,anntype] = rdann('nsrdb/16786','atr',[],3840,0,'N');
 %[ann,anntype] = rdann('nsrdb/16795','atr',[],3840,0,'N');
 % [ann,anntype] = rdann('nsrdb/17052','atr',[],3840,0,'N');
 
